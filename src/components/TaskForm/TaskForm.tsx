@@ -20,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useEffect, useState } from "react";
+import { useGetTaskQuery } from "@/redux/slice";
 
 type IProps = {
   onSubmit: (data: any, id?: number) => void;
@@ -48,6 +50,22 @@ export const TaskForm: React.FC<IProps> = ({ onSubmit, title, id }) => {
       status: "",
     },
   });
+
+  let response: any;
+  if (id) {
+    response = useGetTaskQuery(id);
+  }
+
+  useEffect(() => {
+    if (response?.isSuccess) {
+      form.setValue("title", response.data.title);
+      form.setValue("description", response.data.description);
+      form.setValue("status", response.data.status);
+    } else {
+      form.setValue("status", STATUS_OPTIONS.TODO);
+    }
+  }, [response]);
+
   return (
     <Form {...form}>
       <form
